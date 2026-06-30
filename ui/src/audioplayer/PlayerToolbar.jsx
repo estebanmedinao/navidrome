@@ -1,14 +1,17 @@
-import React, { useCallback } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { useDispatch } from 'react-redux'
-import { useGetOne } from 'react-admin'
+import { useGetOne, useTranslate } from 'react-admin'
 import { GlobalHotKeys } from 'react-hotkeys'
 import IconButton from '@material-ui/core/IconButton'
 import { useMediaQuery } from '@material-ui/core'
 import { RiSaveLine } from 'react-icons/ri'
+import { MdLyrics } from 'react-icons/md'
 import { LoveButton, useToggleLove } from '../common'
 import { openSaveQueueDialog } from '../actions'
 import { keyMap } from '../hotkeys'
 import { makeStyles } from '@material-ui/core/styles'
+import { LyricsModal } from './LyricsModal'
+import { parseLyrics } from './lyrics'
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -57,10 +60,14 @@ const useStyles = makeStyles((theme) => ({
 
 const PlayerToolbar = ({ id, isRadio }) => {
   const dispatch = useDispatch()
+  const translate = useTranslate()
   const { data, loading } = useGetOne('song', id, { enabled: !!id && !isRadio })
   const [toggleLove, toggling] = useToggleLove('song', data)
   const isDesktop = useMediaQuery('(min-width:810px)')
   const classes = useStyles()
+  const [lyricsOpen, setLyricsOpen] = useState(false)
+
+  const hasLyrics = useMemo(() => parseLyrics(data?.lyrics).length > 0, [data])
 
   const handlers = {
     TOGGLE_LOVE: useCallback(() => toggleLove(), [toggleLove]),
@@ -73,6 +80,11 @@ const PlayerToolbar = ({ id, isRadio }) => {
     },
     [dispatch],
   )
+
+  const handleOpenLyrics = useCallback((e) => {
+    setLyricsOpen(true)
+    e.stopPropagation()
+  }, [])
 
   const buttonClass = isDesktop ? classes.button : classes.mobileButton
   const listItemClass = isDesktop ? classes.toolbar : classes.mobileListItem
@@ -99,6 +111,20 @@ const PlayerToolbar = ({ id, isRadio }) => {
     />
   )
 
+  const lyricsButton = (
+    <IconButton
+      size={isDesktop ? 'small' : undefined}
+      onClick={handleOpenLyrics}
+      disabled={loading || !hasLyrics || isRadio}
+      title={translate('player.viewLyricsText')}
+      aria-label={translate('player.viewLyricsText')}
+      data-testid="lyrics-button"
+      className={buttonClass}
+    >
+      <MdLyrics className={!isDesktop ? classes.mobileIcon : undefined} />
+    </IconButton>
+  )
+
   return (
     <>
       <GlobalHotKeys keyMap={keyMap} handlers={handlers} allowChanges />
@@ -106,13 +132,20 @@ const PlayerToolbar = ({ id, isRadio }) => {
         <li className={`${listItemClass} item`}>
           {saveQueueButton}
           {loveButton}
+          {lyricsButton}
         </li>
       ) : (
         <>
           <li className={`${listItemClass} item`}>{saveQueueButton}</li>
           <li className={`${listItemClass} item`}>{loveButton}</li>
+          <li className={`${listItemClass} item`}>{lyricsButton}</li>
         </>
       )}
+      <LyricsModal
+        open={lyricsOpen}
+        onClose={() => setLyricsOpen(false)}
+        song={data}
+      />
     </>
   )
 }

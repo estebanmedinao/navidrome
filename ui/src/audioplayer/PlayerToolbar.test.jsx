@@ -18,6 +18,11 @@ vi.mock('@material-ui/core', async () => {
 
 vi.mock('react-admin', () => ({
   useGetOne: vi.fn(),
+  useTranslate: () => (key) => key,
+}))
+
+vi.mock('./LyricsModal', () => ({
+  LyricsModal: ({ open }) => (open ? <div data-testid="lyrics-modal" /> : null),
 }))
 
 vi.mock('react-redux', () => ({
@@ -45,6 +50,9 @@ describe('<PlayerToolbar />', () => {
   const mockToggleLove = vi.fn()
   const mockDispatch = vi.fn()
   const mockSongData = { id: 'song-1', name: 'Test Song', starred: false }
+  const lyrics = JSON.stringify([
+    { lang: 'xxx', synced: false, line: [{ value: 'Hello' }] },
+  ])
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -68,12 +76,34 @@ describe('<PlayerToolbar />', () => {
       const listItems = screen.getAllByRole('listitem')
       expect(listItems).toHaveLength(1)
 
-      // Verify both buttons are rendered
+      // Verify all buttons are rendered
       expect(screen.getByTestId('save-queue-button')).toBeInTheDocument()
       expect(screen.getByTestId('love-button')).toBeInTheDocument()
+      expect(screen.getByTestId('lyrics-button')).toBeInTheDocument()
 
       // Verify desktop classes are applied
       expect(listItems[0].className).toContain('toolbar')
+    })
+
+    it('disables the lyrics button when the song has no lyrics', () => {
+      render(<PlayerToolbar id="song-1" />)
+
+      expect(screen.getByTestId('lyrics-button')).toBeDisabled()
+    })
+
+    it('enables the lyrics button and opens the modal when lyrics exist', () => {
+      useGetOne.mockReturnValue({
+        data: { ...mockSongData, lyrics },
+        loading: false,
+      })
+
+      render(<PlayerToolbar id="song-1" />)
+
+      const lyricsButton = screen.getByTestId('lyrics-button')
+      expect(lyricsButton).not.toBeDisabled()
+
+      fireEvent.click(lyricsButton)
+      expect(screen.getByTestId('lyrics-modal')).toBeInTheDocument()
     })
 
     it('disables save queue button when isRadio is true', () => {
@@ -114,15 +144,17 @@ describe('<PlayerToolbar />', () => {
 
       // Each button should be in its own list item
       const listItems = screen.getAllByRole('listitem')
-      expect(listItems).toHaveLength(2)
+      expect(listItems).toHaveLength(3)
 
-      // Verify both buttons are rendered
+      // Verify all buttons are rendered
       expect(screen.getByTestId('save-queue-button')).toBeInTheDocument()
       expect(screen.getByTestId('love-button')).toBeInTheDocument()
+      expect(screen.getByTestId('lyrics-button')).toBeInTheDocument()
 
       // Verify mobile classes are applied
       expect(listItems[0].className).toContain('mobileListItem')
       expect(listItems[1].className).toContain('mobileListItem')
+      expect(listItems[2].className).toContain('mobileListItem')
     })
 
     it('disables save queue button when isRadio is true', () => {
