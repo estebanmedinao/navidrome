@@ -125,6 +125,11 @@ const getSimilarSongs2 = (id, count = 100) => {
   return httpClient(url('getSimilarSongs2', id, { count }))
 }
 
+// Resolves the lyrics for a song from all of Navidrome's sources (embedded
+// tags, external .lrc/.txt sidecar files, and plugins), unlike the song's
+// `lyrics` field which only holds embedded lyrics.
+const getLyrics = (id) => httpClient(url('getLyricsBySongId', id))
+
 const getTopSongs = (artist, count = 50) => {
   return httpClient(url('getTopSongs', null, { artist, count }))
 }
@@ -158,4 +163,5 @@ export default {
   getArtistInfo,
   getTopSongs,
   getSimilarSongs2,
+  getLyrics,
 }

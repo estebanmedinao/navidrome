@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useGetOne, useTranslate } from 'react-admin'
 import { GlobalHotKeys } from 'react-hotkeys'
@@ -11,7 +11,6 @@ import { openSaveQueueDialog } from '../actions'
 import { keyMap } from '../hotkeys'
 import { makeStyles } from '@material-ui/core/styles'
 import { LyricsModal } from './LyricsModal'
-import { parseLyrics } from './lyrics'
 
 const useStyles = makeStyles((theme) => ({
   toolbar: {
@@ -67,8 +66,6 @@ const PlayerToolbar = ({ id, isRadio }) => {
   const classes = useStyles()
   const [lyricsOpen, setLyricsOpen] = useState(false)
 
-  const hasLyrics = useMemo(() => parseLyrics(data?.lyrics).length > 0, [data])
-
   const handlers = {
     TOGGLE_LOVE: useCallback(() => toggleLove(), [toggleLove]),
   }
@@ -115,7 +112,7 @@ const PlayerToolbar = ({ id, isRadio }) => {
     <IconButton
       size={isDesktop ? 'small' : undefined}
       onClick={handleOpenLyrics}
-      disabled={loading || !hasLyrics || isRadio}
+      disabled={loading || !id || isRadio}
       title={translate('player.viewLyricsText')}
       aria-label={translate('player.viewLyricsText')}
       data-testid="lyrics-button"

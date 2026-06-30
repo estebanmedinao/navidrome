@@ -50,9 +50,6 @@ describe('<PlayerToolbar />', () => {
   const mockToggleLove = vi.fn()
   const mockDispatch = vi.fn()
   const mockSongData = { id: 'song-1', name: 'Test Song', starred: false }
-  const lyrics = JSON.stringify([
-    { lang: 'xxx', synced: false, line: [{ value: 'Hello' }] },
-  ])
 
   beforeEach(() => {
     vi.clearAllMocks()
@@ -85,18 +82,7 @@ describe('<PlayerToolbar />', () => {
       expect(listItems[0].className).toContain('toolbar')
     })
 
-    it('disables the lyrics button when the song has no lyrics', () => {
-      render(<PlayerToolbar id="song-1" />)
-
-      expect(screen.getByTestId('lyrics-button')).toBeDisabled()
-    })
-
-    it('enables the lyrics button and opens the modal when lyrics exist', () => {
-      useGetOne.mockReturnValue({
-        data: { ...mockSongData, lyrics },
-        loading: false,
-      })
-
+    it('enables the lyrics button and opens the modal for a song', () => {
       render(<PlayerToolbar id="song-1" />)
 
       const lyricsButton = screen.getByTestId('lyrics-button')
@@ -104,6 +90,12 @@ describe('<PlayerToolbar />', () => {
 
       fireEvent.click(lyricsButton)
       expect(screen.getByTestId('lyrics-modal')).toBeInTheDocument()
+    })
+
+    it('disables the lyrics button when isRadio is true', () => {
+      render(<PlayerToolbar id="song-1" isRadio={true} />)
+
+      expect(screen.getByTestId('lyrics-button')).toBeDisabled()
     })
 
     it('disables save queue button when isRadio is true', () => {
