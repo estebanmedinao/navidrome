@@ -56,10 +56,9 @@ export default defineConfig({
 // PWA manifest
 function manifest() {
   return {
-    name: 'Navidrome',
-    short_name: 'Navidrome',
-    description:
-      'Navidrome, an open source web-based music collection server and streamer',
+    name: 'Chile Gospel',
+    short_name: 'Chile Gospel',
+    description: 'Chile Gospel',
     categories: ['music', 'entertainment'],
     display: 'standalone',
     start_url: './',
