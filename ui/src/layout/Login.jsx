@@ -18,7 +18,7 @@ import {
   useTranslate,
   useVersion,
 } from 'react-admin'
-import Logo from '../icons/android-icon-192x192.png'
+import Logo from '../icons/chilegospel-logo.png'
 
 import Notification from './Notification'
 import useCurrentTheme from '../themes/useCurrentTheme'
@@ -49,12 +49,12 @@ const useStyles = makeStyles(
       margin: '1em',
       display: 'flex',
       justifyContent: 'center',
-      marginTop: '-3em',
+      marginTop: '1em',
     },
     icon: {
       backgroundColor: 'transparent',
-      width: '6.3em',
-      height: '6.3em',
+      width: '12em',
+      height: 'auto',
     },
     systemName: {
       marginTop: '1em',
@@ -126,17 +126,7 @@ const FormLogin = ({ loading, handleSubmit, validate }) => {
           <div className={classes.main}>
             <Card className={classes.card}>
               <div className={classes.avatar}>
-                <img src={Logo} className={classes.icon} alt={'logo'} />
-              </div>
-              <div className={classes.systemName}>
-                <a
-                  href="https://www.navidrome.org"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={classes.systemNameLink}
-                >
-                  Navidrome
-                </a>
+                <img src={Logo} className={classes.icon} alt={'Chile Gospel'} />
               </div>
               {config.welcomeMessage && (
                 <div
@@ -258,7 +248,7 @@ const FormSignUp = ({ loading, handleSubmit, validate }) => {
           <div className={classes.main}>
             <Card className={classes.card}>
               <div className={classes.avatar}>
-                <img src={Logo} className={classes.icon} alt={'logo'} />
+                <img src={Logo} className={classes.icon} alt={'Chile Gospel'} />
               </div>
               <div className={classes.welcome}>
                 {translate('ra.auth.welcome1')}
